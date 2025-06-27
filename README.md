@@ -1,12 +1,18 @@
+### Termdine
+Termdine is an ncurses-like library for zig
+
+
 Current Features: 
+ - Windows:
+   - Drawing 
+   - Writing:
+     - Colors 
+   - Borders
 
 Todo:
  - Windows:
-   - Drawing 
-   - Writing  
-     - Colors 
+   - Writing:
      - Styles (Bold, Italics, etc.)
-   - Borders 
  - Events
    - Input
      - Mouse
