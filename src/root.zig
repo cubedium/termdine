@@ -14,13 +14,13 @@ pub const Color = struct {
     }
 
     pub fn Red()    Color { return Color.create_color(255, 0  , 0  ); }
-    pub fn Orange() Color { return Color.create_color(255, 165, 0  ); }
-    pub fn Yellow() Color { return Color.create_color(255, 255, 0  ); }
-    pub fn Green()  Color { return Color.create_color(0  , 255, 0  ); }
     pub fn Blue()   Color { return Color.create_color(0  , 0  , 255); }
-    pub fn Purple() Color { return Color.create_color(255, 0  , 255); }
+    pub fn Green()  Color { return Color.create_color(0  , 255, 0  ); }
     pub fn Black()  Color { return Color.create_color(0  , 0  , 0  ); }
     pub fn White()  Color { return Color.create_color(255, 255, 255); }
+    pub fn Orange() Color { return Color.create_color(255, 165, 0  ); }
+    pub fn Yellow() Color { return Color.create_color(255, 255, 0  ); }
+    pub fn Purple() Color { return Color.create_color(255, 0  , 255); }
 
     pub fn get_red(self: Color)   u8 { return self.red;   }
     pub fn get_blue(self: Color)  u8 { return self.blue;  }
@@ -72,9 +72,9 @@ pub const Cell = struct {
         self.foreground_color = new_foreground_color;
     }
 
-    pub fn get_character(self: Cell)        u8     { return self.character;        }
     pub fn get_background_color(self: Cell) ?Color { return self.background_color; }
     pub fn get_foreground_color(self: Cell) Color  { return self.foreground_color; }
+    pub fn get_character(self: Cell)        u8     { return self.character;        }
 };
 
 // --------------------
@@ -147,7 +147,7 @@ pub const Window = struct {
         self.cursor = x+y*self.width;
     }
 
-    pub fn draw(self: Window) void {
+    pub fn draw(self: *Window) void {
         // draw top border
         if (self.border) {
             std.debug.print("+", .{});
@@ -182,13 +182,22 @@ pub const Window = struct {
             }
             std.debug.print("+\n", .{});
         }
+        self.cursor = 0;
+        std.debug.print("\x1b", .{});
     }
 
+    pub fn get_string(self: Window, reader: anytype, buffer: []u8) ![]u8 {
+        std.debug.print(": ", .{});
+        _ = self;
+        const read_bytes = try reader.read(buffer);
+
+        return buffer[0..read_bytes];
+    }
+
+    pub fn has_border(self: Window) bool { return self.border; }
     pub fn get_width(self: Window)  u16  { return self.width;  }
     pub fn get_height(self: Window) u16  { return self.height; }
-    pub fn has_border(self: Window) bool { return self.border; }
 };
-
 
 // --------------------
 // Tests                
@@ -236,13 +245,13 @@ test "Color: create color" {
 
 test "Color: color defaults" {
     try testing.expectEqual(Color{.red = 255, .green = 0  , .blue = 0  }, Color.Red()   );
-    try testing.expectEqual(Color{.red = 255, .green = 165, .blue = 0  }, Color.Orange());
-    try testing.expectEqual(Color{.red = 255, .green = 255, .blue = 0  }, Color.Yellow());
-    try testing.expectEqual(Color{.red = 0  , .green = 255, .blue = 0  }, Color.Green() );
     try testing.expectEqual(Color{.red = 0  , .green = 0  , .blue = 255}, Color.Blue()  );
-    try testing.expectEqual(Color{.red = 255, .green = 0  , .blue = 255}, Color.Purple());
+    try testing.expectEqual(Color{.red = 0  , .green = 255, .blue = 0  }, Color.Green() );
     try testing.expectEqual(Color{.red = 0  , .green = 0  , .blue = 0  }, Color.Black() ); 
     try testing.expectEqual(Color{.red = 255, .green = 255, .blue = 255}, Color.White() );
+    try testing.expectEqual(Color{.red = 255, .green = 165, .blue = 0  }, Color.Orange());
+    try testing.expectEqual(Color{.red = 255, .green = 255, .blue = 0  }, Color.Yellow());
+    try testing.expectEqual(Color{.red = 255, .green = 0  , .blue = 255}, Color.Purple());
 }
 
 test "Color: get red" {
