@@ -1,3 +1,5 @@
+## (NOTE: i quit on this project, now im just stealing the name for another project)
+
 ### Termdine
 Termdine is an ncurses-like library for zig
 
